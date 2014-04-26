@@ -5,21 +5,16 @@ import (
 	"fmt"
 )
 
-type SentenceAccuracy struct {
-	wordCount    int
-	correctCount int
-}
+type Context struct {
+	hasLibchewing     bool
+	libchewingContext BenchmarkContext
 
-type BenchmarkContext struct {
-	hasLibchewing      bool
-	libchewingAccuracy SentenceAccuracy
-
-	hasLibzhuyin      bool
-	libzhuyinAccuracy SentenceAccuracy
+	hasLibzhuyin bool
+	libzhuyin    BenchmarkContext
 }
 
 func main() {
-	var ctx BenchmarkContext
+	var ctx Context
 
 	flag.BoolVar(&ctx.hasLibchewing, "libchewing", false, "Enable libchewing benchmark")
 	flag.BoolVar(&ctx.hasLibzhuyin, "libzhuyin", false, "Enable libzhuyin benchmark")
@@ -28,6 +23,6 @@ func main() {
 
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
-		fmt.Printf("done\n")
+		fmt.Printf("Done\n")
 	}
 }
