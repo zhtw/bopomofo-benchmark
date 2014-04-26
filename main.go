@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 type Context struct {
@@ -23,6 +24,13 @@ func main() {
 
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
+
+		data, err := readRawData(input)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot open %s\n", input)
+			break
+		}
+
 		fmt.Printf("Done\n")
 	}
 }
