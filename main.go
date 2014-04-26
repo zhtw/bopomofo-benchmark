@@ -25,10 +25,10 @@ func main() {
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
 
-		_, err := readRawData(input)
+		_, err := getBenchmarkInput(input)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot open %s\n", input)
-			break
+			continue
 		}
 
 		fmt.Printf("Done\n")

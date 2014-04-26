@@ -4,13 +4,26 @@ import (
 	"os"
 )
 
-func readRawData(filename string) (bopomofo []string, err error) {
+func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
+
+	_ = readRawData(filename)
+
+	return output, err
+}
+
+func readRawData(filename string) (output []string) {
 
 	fd, err := os.Open(filename)
 	if err != nil {
-		return bopomofo, err
+		panic(err)
 	}
 	defer fd.Close()
 
-	return bopomofo, err
+	return output
 }

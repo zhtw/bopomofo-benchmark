@@ -9,3 +9,8 @@ type BenchmarkContext struct {
 	name     string
 	accuracy []SentenceAccuracy
 }
+
+type BenchmarkInput struct {
+	inputString   string
+	inputBopomofo string
+}
