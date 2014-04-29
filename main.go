@@ -20,7 +20,7 @@ func setup(ctx *Context) {
 
 func cleanup(ctx *Context) {
 	if ctx.hasChewing {
-		// FIXME: Clean libchewing
+		ctx.chewingContext.deleteChewingContext()
 	}
 }
 
