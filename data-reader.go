@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"os"
+	"strings"
 )
 
 func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
@@ -12,18 +14,25 @@ func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
 		}
 	}()
 
-	_ = readRawData(filename)
-
-	return output, err
-}
-
-func readRawData(filename string) (output []string) {
-
 	fd, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
 	defer fd.Close()
 
-	return output
+	for scanner := bufio.NewScanner(fd); scanner.Scan(); {
+		text := scanner.Text()
+
+		comment := strings.Index(text, "#")
+		if comment != -1 {
+			text = text[:comment]
+		}
+
+		text = strings.TrimSpace(text)
+		if text == "" {
+			continue
+		}
+	}
+
+	return output, err
 }
