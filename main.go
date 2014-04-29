@@ -11,12 +11,12 @@ type MainContext struct {
 	chewingContext *ChewingContext
 }
 
-func initMainContext(mainContext *MainContext) {
-	InitChewingContext(mainContext)
+func (mainContext *MainContext) initMainContext() {
+	mainContext.initChewingContext()
 }
 
-func deinitMainContext(mainContext *MainContext) {
-	DeinitChewingContext(mainContext)
+func (mainContext *MainContext) deinitMainContext() {
+	mainContext.deinitChewingContext()
 }
 
 func main() {
@@ -31,8 +31,8 @@ func main() {
 
 	flag.BoolVar(&mainContext.hasChewing, "chewing", false, "Enable libchewing benchmark")
 
-	initMainContext(&mainContext)
-	defer deinitMainContext(&mainContext)
+	mainContext.initMainContext()
+	defer mainContext.deinitMainContext()
 
 	flag.Parse()
 

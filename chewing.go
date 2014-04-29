@@ -57,7 +57,7 @@ var BOPOMOFO_MAPPING = map[rune]uint8{
 	'ˋ': '4',
 }
 
-func InitChewingContext(mainCtx *MainContext) {
+func (mainCtx *MainContext) initChewingContext() {
 	if !mainCtx.hasChewing {
 		return
 	}
@@ -71,7 +71,7 @@ func InitChewingContext(mainCtx *MainContext) {
 	}
 }
 
-func DeinitChewingContext(mainCtx *MainContext) {
+func (mainCtx *MainContext) deinitChewingContext() {
 	if mainCtx.chewingContext == nil {
 		return
 	}
