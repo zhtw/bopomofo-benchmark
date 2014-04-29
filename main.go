@@ -7,18 +7,30 @@ import (
 )
 
 type Context struct {
-	hasLibchewing     bool
-	libchewingContext BenchmarkContext
+	hasChewing     bool
+	chewingContext *ChewingContext
+}
 
-	hasLibzhuyin bool
-	libzhuyin    BenchmarkContext
+func setup(ctx *Context) {
+
+	if ctx.hasChewing {
+		ctx.chewingContext = NewChewingContext()
+	}
+}
+
+func cleanup(ctx *Context) {
+	if ctx.hasChewing {
+		// FIXME: Clean libchewing
+	}
 }
 
 func main() {
 	var ctx Context
 
-	flag.BoolVar(&ctx.hasLibchewing, "libchewing", false, "Enable libchewing benchmark")
-	flag.BoolVar(&ctx.hasLibzhuyin, "libzhuyin", false, "Enable libzhuyin benchmark")
+	flag.BoolVar(&ctx.hasChewing, "chewing", false, "Enable libchewing benchmark")
+
+	setup(&ctx)
+	defer cleanup(&ctx)
 
 	flag.Parse()
 
