@@ -7,4 +7,4 @@ go:
 before_install:
     - sudo add-apt-repository --yes ppa:chewing/chewing
     - sudo apt-get update
-    - sudo apt-get install --qq libchewing3-dev
+    - sudo apt-get install -qq libchewing3-dev
