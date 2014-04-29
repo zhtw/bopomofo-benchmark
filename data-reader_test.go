@@ -26,11 +26,11 @@ func Test_getBenchmarkInput(t *testing.T) {
 
 	expectString := "這是輸入"
 	if output[0].inputString != expectString {
-		t.Fatalf("inputString %s shall be %s", output[0].inputString, expectString)
+		t.Fatalf("inputString `%s' shall be `%s'", output[0].inputString, expectString)
 	}
 
 	expectBopomofo := "ㄓㄜˋㄕˋㄕㄨㄖㄨˋ"
 	if output[0].inputBopomofo != expectBopomofo {
-		t.Fatalf("inputBopomofo %s shall be %s", output[0].inputBopomofo, expectBopomofo)
+		t.Fatalf("inputBopomofo `%s' shall be `%s'", output[0].inputBopomofo, expectBopomofo)
 	}
 }

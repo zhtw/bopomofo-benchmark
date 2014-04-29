@@ -32,6 +32,18 @@ func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
 		if text == "" {
 			continue
 		}
+
+		out := strings.Split(text, "|")
+		if len(out) != 2 {
+			continue
+		}
+
+		benchmarkInput := BenchmarkInput{
+			out[0],
+			out[1],
+		}
+
+		output = append(output, benchmarkInput)
 	}
 
 	return output, err
