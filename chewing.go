@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 // #cgo CFLAGS: -I/usr/include/chewing
 // #cgo LDFLAGS: -lchewing
 // #include <chewing.h>
@@ -10,7 +14,7 @@ type ChewingContext struct {
 	ctx *[0]byte
 }
 
-var BOPOMOFO_MAPPING = map[rune]uint8{
+var BOPOMOFO_START = map[rune]uint8{
 	'ㄅ': '1',
 	'ㄆ': 'q',
 	'ㄇ': 'a',
@@ -32,7 +36,9 @@ var BOPOMOFO_MAPPING = map[rune]uint8{
 	'ㄗ': 'y',
 	'ㄘ': 'h',
 	'ㄙ': 'n',
+}
 
+var BOPOMOFO_END = map[rune]uint8{
 	'ㄧ': 'u',
 	'ㄨ': 'j',
 	'ㄩ': 'm',
@@ -50,7 +56,9 @@ var BOPOMOFO_MAPPING = map[rune]uint8{
 	'ㄤ': ';',
 	'ㄥ': '/',
 	'ㄦ': '-',
+}
 
+var BOPOMOFO_TONE = map[rune]uint8{
 	'˙': '7',
 	'ˊ': '6',
 	'ˇ': '3',
@@ -78,4 +86,52 @@ func (mainCtx *MainContext) deinitChewingContext() {
 
 	C.chewing_delete(mainCtx.chewingContext.ctx)
 	mainCtx.chewingContext.ctx = nil
+}
+
+func (mainCtx *MainContext) enterBenchmarkInput(input *BenchmarkInput) {
+	if !mainCtx.hasChewing {
+		return
+	}
+
+	if mainCtx.chewingContext == nil || mainCtx.chewingContext.ctx == nil {
+		panic("mainCtx.chewingContext == nil || mainCtx.chewingContext.ctx == nil")
+	}
+
+	_ = bopomofoToKey(input.inputBopomofo)
+}
+
+func bopomofoToKey(bopomofo string) (keySequence []uint8) {
+	terminated := true
+	var key uint8
+	var ok bool
+
+	for _, runeValue := range bopomofo {
+		key, ok = BOPOMOFO_START[runeValue]
+		if ok {
+			if !terminated {
+				keySequence = append(keySequence, ' ')
+				terminated = true
+			}
+			keySequence = append(keySequence, key)
+			continue
+		}
+
+		key, ok = BOPOMOFO_END[runeValue]
+		if ok {
+			terminated = false
+			keySequence = append(keySequence, key)
+			continue
+		}
+
+		key, ok = BOPOMOFO_TONE[runeValue]
+		if ok {
+			terminated = true
+			keySequence = append(keySequence, key)
+			continue
+		}
+
+		panic(fmt.Sprintf("Unknown bopomofo: %c", runeValue))
+	}
+
+	return keySequence
 }
