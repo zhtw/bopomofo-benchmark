@@ -12,7 +12,6 @@ type Context struct {
 }
 
 func setup(ctx *Context) {
-
 	if ctx.hasChewing {
 		ctx.chewingContext = NewChewingContext()
 	}
