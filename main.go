@@ -6,30 +6,33 @@ import (
 	"os"
 )
 
-type Context struct {
+type MainContext struct {
 	hasChewing     bool
 	chewingContext *ChewingContext
 }
 
-func setup(ctx *Context) {
-	if ctx.hasChewing {
-		ctx.chewingContext = NewChewingContext()
-	}
+func initMainContext(mainContext *MainContext) {
+	InitChewingContext(mainContext)
 }
 
-func cleanup(ctx *Context) {
-	if ctx.hasChewing {
-		ctx.chewingContext.deleteChewingContext()
-	}
+func deinitMainContext(mainContext *MainContext) {
+	DeinitChewingContext(mainContext)
 }
 
 func main() {
-	var ctx Context
 
-	flag.BoolVar(&ctx.hasChewing, "chewing", false, "Enable libchewing benchmark")
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprint(os.Stderr, r)
+		}
+	}()
 
-	setup(&ctx)
-	defer cleanup(&ctx)
+	var mainContext MainContext
+
+	flag.BoolVar(&mainContext.hasChewing, "chewing", false, "Enable libchewing benchmark")
+
+	initMainContext(&mainContext)
+	defer deinitMainContext(&mainContext)
 
 	flag.Parse()
 

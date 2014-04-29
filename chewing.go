@@ -7,19 +7,28 @@ import "C"
 
 type ChewingContext struct {
 	BenchmarkContext
-	chewingContext *[0]byte
+	ctx *[0]byte
 }
 
-func NewChewingContext() (context *ChewingContext) {
-	ctx := new(ChewingContext)
-	ctx.name = "chewing"
-	ctx.chewingContext = C.chewing_new2(nil, nil, nil, nil)
-	return ctx
-}
-
-func (c *ChewingContext) deleteChewingContext() {
-	if c != nil {
-		C.chewing_delete(c.chewingContext)
-		c.chewingContext = nil
+func InitChewingContext(mainCtx *MainContext) {
+	if !mainCtx.hasChewing {
+		return
 	}
+
+	mainCtx.chewingContext = new(ChewingContext)
+	mainCtx.chewingContext.name = "chewing"
+
+	mainCtx.chewingContext.ctx = C.chewing_new2(nil, nil, nil, nil)
+	if mainCtx.chewingContext.ctx == nil {
+		panic("chewing_new2 returns NULL")
+	}
+}
+
+func DeinitChewingContext(mainCtx *MainContext) {
+	if mainCtx.chewingContext == nil {
+		return
+	}
+
+	C.chewing_delete(mainCtx.chewingContext.ctx)
+	mainCtx.chewingContext.ctx = nil
 }
