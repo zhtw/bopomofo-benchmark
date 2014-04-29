@@ -6,4 +6,5 @@ popd > /dev/null
 GOPATH=$SCRIPTPATH
 PROJECT=github.com/zhtw/bopomofo-benchmark
 go fmt $PROJECT
+go test $PROJECT
 go build $PROJECT
