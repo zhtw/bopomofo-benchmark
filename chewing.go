@@ -133,5 +133,9 @@ func bopomofoToKey(bopomofo string) (keySequence []uint8) {
 		panic(fmt.Sprintf("Unknown bopomofo: %c", runeValue))
 	}
 
+	if !terminated {
+		keySequence = append(keySequence, ' ')
+	}
+
 	return keySequence
 }
