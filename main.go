@@ -19,8 +19,11 @@ func (mainContext *MainContext) deinitMainContext() {
 	mainContext.deinitChewingContext()
 }
 
-func main() {
+func (mainContext *MainContext) enterBenchmarkInput(input *BenchmarkInput) {
+	mainContext.enterChewingBenchmarkInput(input)
+}
 
+func main() {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprint(os.Stderr, r)

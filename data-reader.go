@@ -7,7 +7,6 @@ import (
 )
 
 func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
-
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)

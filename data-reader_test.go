@@ -7,7 +7,6 @@ import (
 )
 
 func Test_getBenchmarkInput(t *testing.T) {
-
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("Cannot get current filename")

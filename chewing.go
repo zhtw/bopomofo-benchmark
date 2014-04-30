@@ -88,7 +88,7 @@ func (mainCtx *MainContext) deinitChewingContext() {
 	mainCtx.chewingContext.ctx = nil
 }
 
-func (mainCtx *MainContext) enterBenchmarkInput(input *BenchmarkInput) {
+func (mainCtx *MainContext) enterChewingBenchmarkInput(input *BenchmarkInput) {
 	if !mainCtx.hasChewing {
 		return
 	}
@@ -97,7 +97,12 @@ func (mainCtx *MainContext) enterBenchmarkInput(input *BenchmarkInput) {
 		panic("mainCtx.chewingContext == nil || mainCtx.chewingContext.ctx == nil")
 	}
 
-	_ = bopomofoToKey(input.inputBopomofo)
+	C.chewing_clean_bopomofo_buf(mainCtx.chewingContext.ctx)
+	C.chewing_clean_preedit_buf(mainCtx.chewingContext.ctx)
+
+	for _, key := range bopomofoToKey(input.inputBopomofo) {
+		C.chewing_handle_Default(mainCtx.chewingContext.ctx, C.int(key))
+	}
 }
 
 func bopomofoToKey(bopomofo string) (keySequence []uint8) {
