@@ -9,9 +9,9 @@ import (
 // #include <chewing.h>
 import "C"
 
-type ChewingContext struct {
-	BenchmarkContext
-	ctx *[0]byte
+type ChewingBenchmarkContext struct {
+	accuracy []Accuracy
+	ctx      *[0]byte
 }
 
 var BOPOMOFO_START = map[rune]uint8{
@@ -65,48 +65,45 @@ var BOPOMOFO_TONE = map[rune]uint8{
 	'ˋ': '4',
 }
 
-func (mainCtx *MainContext) initChewingContext() {
-	if !mainCtx.hasChewing {
-		return
-	}
+func newChewingBenchmarkItem() *ChewingBenchmarkContext {
+	ctx := new(ChewingBenchmarkContext)
 
-	mainCtx.chewingContext = new(ChewingContext)
-	mainCtx.chewingContext.name = "chewing"
-
-	mainCtx.chewingContext.ctx = C.chewing_new2(nil, nil, nil, nil)
-	if mainCtx.chewingContext.ctx == nil {
+	ctx.ctx = C.chewing_new2(nil, nil, nil, nil)
+	if ctx.ctx == nil {
 		panic("chewing_new2 returns NULL")
 	}
+
+	return ctx
 }
 
-func (mainCtx *MainContext) deinitChewingContext() {
-	if mainCtx.chewingContext == nil {
+func (ctx *ChewingBenchmarkContext) deinit() {
+	if ctx.ctx == nil {
 		return
 	}
 
-	C.chewing_delete(mainCtx.chewingContext.ctx)
-	mainCtx.chewingContext.ctx = nil
+	C.chewing_delete(ctx.ctx)
+	ctx.ctx = nil
 }
 
-func (mainCtx *MainContext) enterChewingBenchmarkInput(input *BenchmarkInput) {
-	if !mainCtx.hasChewing {
+func (ctx *ChewingBenchmarkContext) getName() string {
+	return "chewing"
+}
+
+func (ctx *ChewingBenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
+	if ctx.ctx == nil {
 		return
 	}
 
-	if mainCtx.chewingContext == nil || mainCtx.chewingContext.ctx == nil {
-		panic("mainCtx.chewingContext == nil || mainCtx.chewingContext.ctx == nil")
-	}
-
-	C.chewing_clean_bopomofo_buf(mainCtx.chewingContext.ctx)
-	C.chewing_clean_preedit_buf(mainCtx.chewingContext.ctx)
+	C.chewing_clean_bopomofo_buf(ctx.ctx)
+	C.chewing_clean_preedit_buf(ctx.ctx)
 
 	for _, key := range bopomofoToKey(input.inputBopomofo) {
-		C.chewing_handle_Default(mainCtx.chewingContext.ctx, C.int(key))
+		C.chewing_handle_Default(ctx.ctx, C.int(key))
 	}
 
-	var accuracy SentenceAccuracy
+	var accuracy Accuracy
 
-	result := C.GoString(C.chewing_buffer_String_static(mainCtx.chewingContext.ctx))
+	result := C.GoString(C.chewing_buffer_String_static(ctx.ctx))
 
 	if len(result) != len(input.inputString) {
 		panic("len(result) != len(input.inputString)")
@@ -120,7 +117,11 @@ func (mainCtx *MainContext) enterChewingBenchmarkInput(input *BenchmarkInput) {
 		}
 	}
 
-	mainCtx.chewingContext.accuracy = append(mainCtx.chewingContext.accuracy, accuracy)
+	ctx.accuracy = append(ctx.accuracy, accuracy)
+}
+
+func (ctx *ChewingBenchmarkContext) getAccuracy() []Accuracy {
+	return ctx.accuracy
 }
 
 func bopomofoToKey(bopomofo string) (keySequence []uint8) {

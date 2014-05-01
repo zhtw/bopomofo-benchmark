@@ -5,24 +5,36 @@ type Accuracy struct {
 	correctCount int
 }
 
+type BenchmarkInput struct {
+	inputString   string
+	inputBopomofo string
+}
+
 type BenchmarkItem interface {
 	deinit()
 	getName() string
-	addAccuracy(accuracy Accuracy)
+	enterBenchmarkInput(input *BenchmarkInput)
+	getAccuracy() []Accuracy
 }
 
-type BenchmarkContext_ struct {
+type BenchmarkContext struct {
 	benchmarkItem []BenchmarkItem
 }
 
-func (ctx *BenchmarkContext_) addBenchmarkItem(item BenchmarkItem) {
+func (ctx *BenchmarkContext) addBenchmarkItem(item BenchmarkItem) {
 	ctx.benchmarkItem = append(ctx.benchmarkItem, item)
 }
 
-func (ctx *BenchmarkContext_) deinit() {
+func (ctx *BenchmarkContext) deinit() {
 	for _, item := range ctx.benchmarkItem {
 		item.deinit()
 	}
 
 	ctx.benchmarkItem = ctx.benchmarkItem[:0]
+}
+
+func (ctx *BenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
+	for _, item := range ctx.benchmarkItem {
+		item.enterBenchmarkInput(input)
+	}
 }

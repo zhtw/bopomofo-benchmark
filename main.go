@@ -6,23 +6,6 @@ import (
 	"os"
 )
 
-type MainContext struct {
-	hasChewing     bool
-	chewingContext *ChewingContext
-}
-
-func (mainContext *MainContext) initMainContext() {
-	mainContext.initChewingContext()
-}
-
-func (mainContext *MainContext) deinitMainContext() {
-	mainContext.deinitChewingContext()
-}
-
-func (mainContext *MainContext) enterBenchmarkInput(input *BenchmarkInput) {
-	mainContext.enterChewingBenchmarkInput(input)
-}
-
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -30,14 +13,19 @@ func main() {
 		}
 	}()
 
-	var mainContext MainContext
+	var chewing bool
 
-	flag.BoolVar(&mainContext.hasChewing, "chewing", false, "Enable libchewing benchmark")
+	var ctx BenchmarkContext
+	defer func() {
+		ctx.deinit()
+	}()
 
-	mainContext.initMainContext()
-	defer mainContext.deinitMainContext()
-
+	flag.BoolVar(&chewing, "chewing", true, "Enable libchewing benchmark")
 	flag.Parse()
+
+	if chewing {
+		ctx.addBenchmarkItem(newChewingBenchmarkItem())
+	}
 
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
@@ -49,7 +37,7 @@ func main() {
 		}
 
 		for _, input := range inputSeq {
-			mainContext.enterChewingBenchmarkInput(&input)
+			ctx.enterBenchmarkInput(&input)
 		}
 
 		fmt.Printf("Done\n")
