@@ -96,6 +96,7 @@ func (ctx *ChewingBenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
 
 	ctx.enterBopomofo(input)
 	ctx.computeAccuracy(input)
+	ctx.selectCandidate(input)
 }
 
 func (ctx *ChewingBenchmarkContext) enterBopomofo(input *BenchmarkInput) {
@@ -124,6 +125,51 @@ func (ctx *ChewingBenchmarkContext) computeAccuracy(input *BenchmarkInput) {
 	}
 
 	ctx.accuracy = append(ctx.accuracy, accuracy)
+}
+
+func (ctx *ChewingBenchmarkContext) selectCandidate(input *BenchmarkInput) {
+	var ret C.int
+
+	ret = C.chewing_handle_Home(ctx.ctx)
+	if ret == -1 {
+		panic(fmt.Sprintf("C.chewing_handle_Home(ctx.ctx) = %d", ret))
+	}
+
+	for _, word := range input.inputString {
+
+		ret = C.chewing_cand_open(ctx.ctx)
+		if ret != 0 {
+			panic(fmt.Sprintf("C.chewing_cand_open(ctx.ctx) = %d", ret))
+		}
+
+		ret = C.chewing_cand_list_last(ctx.ctx)
+		if ret != 0 {
+			panic(fmt.Sprintf("C.chewing_cand_list_last(ctx.ctx) = %d", ret))
+		}
+
+		total := C.chewing_cand_TotalChoice(ctx.ctx)
+		for index := C.int(0); index < total; index++ {
+			cand := []rune(C.GoString(C.chewing_cand_string_by_index_static(ctx.ctx, index)))
+
+			if len(cand) != 1 {
+				panic("C.chewing_cand_string_by_index_static(ctx.ctx, index) does not return single word")
+			}
+
+			if cand[0] == word {
+				C.chewing_cand_choose_by_index(ctx.ctx, index)
+				break
+			}
+		}
+	}
+
+	if C.GoString(C.chewing_buffer_String_static(ctx.ctx)) != input.inputString {
+		panic("Cannot select correct word")
+	}
+
+	ret = C.chewing_commit_preedit_buf(ctx.ctx)
+	if ret != 0 {
+		panic(fmt.Sprintf("C.chewing_commit_preedit_buf(ctx.ctx) = %d", ret))
+	}
 }
 
 func (ctx *ChewingBenchmarkContext) getAccuracy() []Accuracy {
