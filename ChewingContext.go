@@ -109,12 +109,11 @@ func (ctx *ChewingBenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
 		panic("len(result) != len(input.inputString)")
 	}
 
-	accuracy.wordCount = len(result)
-
 	for i := range result {
 		if result[i] == input.inputString[i] {
 			accuracy.correctCount++
 		}
+		accuracy.wordCount++
 	}
 
 	ctx.accuracy = append(ctx.accuracy, accuracy)
