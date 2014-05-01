@@ -160,6 +160,16 @@ func (ctx *ChewingBenchmarkContext) selectCandidate(input *BenchmarkInput) {
 				break
 			}
 		}
+
+		ret = C.chewing_cand_close(ctx.ctx)
+		if ret != 0 {
+			panic(fmt.Sprintf("C.chewing_cand_close(ctx.ctx) = %d", ret))
+		}
+
+		ret = C.chewing_handle_Right(ctx.ctx)
+		if ret != 0 {
+			panic(fmt.Sprintf("C.chewing_handle_Right(ctx.ctx) = %d", ret))
+		}
 	}
 
 	if C.GoString(C.chewing_buffer_String_static(ctx.ctx)) != input.inputString {
