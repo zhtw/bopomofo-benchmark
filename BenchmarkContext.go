@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Accuracy struct {
 	wordCount    int
 	correctCount int
@@ -36,5 +40,14 @@ func (ctx *BenchmarkContext) deinit() {
 func (ctx *BenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
 	for _, item := range ctx.benchmarkItem {
 		item.enterBenchmarkInput(input)
+	}
+}
+
+func (ctx *BenchmarkContext) print() {
+	for _, item := range ctx.benchmarkItem {
+		fmt.Printf("name: %s\n", item.getName())
+		for _, accuracy := range item.getAccuracy() {
+			fmt.Printf("\t%d / %d\n", accuracy.correctCount, accuracy.wordCount)
+		}
 	}
 }

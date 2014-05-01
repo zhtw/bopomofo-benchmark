@@ -42,4 +42,6 @@ func main() {
 
 		fmt.Printf("Done\n")
 	}
+
+	ctx.print()
 }
