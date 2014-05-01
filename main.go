@@ -42,10 +42,14 @@ func main() {
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
 
-		_, err := getBenchmarkInput(input)
+		inputSeq, err := getBenchmarkInput(input)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot open %s\n", input)
 			continue
+		}
+
+		for _, input := range inputSeq {
+			mainContext.enterChewingBenchmarkInput(&input)
 		}
 
 		fmt.Printf("Done\n")

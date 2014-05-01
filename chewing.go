@@ -103,6 +103,24 @@ func (mainCtx *MainContext) enterChewingBenchmarkInput(input *BenchmarkInput) {
 	for _, key := range bopomofoToKey(input.inputBopomofo) {
 		C.chewing_handle_Default(mainCtx.chewingContext.ctx, C.int(key))
 	}
+
+	var accuracy SentenceAccuracy
+
+	result := C.GoString(C.chewing_buffer_String_static(mainCtx.chewingContext.ctx))
+
+	if len(result) != len(input.inputString) {
+		panic("len(result) != len(input.inputString)")
+	}
+
+	accuracy.wordCount = len(result)
+
+	for i := range result {
+		if result[i] == input.inputString[i] {
+			accuracy.correctCount++
+		}
+	}
+
+	mainCtx.chewingContext.accuracy = append(mainCtx.chewingContext.accuracy, accuracy)
 }
 
 func bopomofoToKey(bopomofo string) (keySequence []uint8) {
