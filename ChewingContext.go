@@ -94,13 +94,20 @@ func (ctx *ChewingBenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
 		return
 	}
 
+	ctx.enterBopomofo(input)
+	ctx.computeAccuracy(input)
+}
+
+func (ctx *ChewingBenchmarkContext) enterBopomofo(input *BenchmarkInput) {
 	C.chewing_clean_bopomofo_buf(ctx.ctx)
 	C.chewing_clean_preedit_buf(ctx.ctx)
 
 	for _, key := range bopomofoToKey(input.inputBopomofo) {
 		C.chewing_handle_Default(ctx.ctx, C.int(key))
 	}
+}
 
+func (ctx *ChewingBenchmarkContext) computeAccuracy(input *BenchmarkInput) {
 	var accuracy Accuracy
 
 	result := C.GoString(C.chewing_buffer_String_static(ctx.ctx))
