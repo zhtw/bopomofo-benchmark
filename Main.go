@@ -65,20 +65,27 @@ func main() {
 		ctx.AddBenchmarkItem(NewChewingBenchmarkItem(workDir))
 	}
 
-	for _, input := range flag.Args() {
-		fmt.Printf("Processing %s ... ", input)
+	for _, arg := range flag.Args() {
+		filepath.Walk(arg, func(path string, info os.FileInfo, err error) error {
+			if info.IsDir() {
+				return nil
+			}
 
-		inputSeq, err := GetBenchmarkInput(input)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Cannot open %s\n", input)
-			continue
-		}
+			fmt.Printf("Processing %s ... ", path)
 
-		for _, input := range inputSeq {
-			ctx.EnterBenchmarkInput(&input)
-		}
+			inputSeq, err := GetBenchmarkInput(path)
+			if err != nil {
+				panic(err)
+			}
 
-		fmt.Printf("Done\n")
+			for _, input := range inputSeq {
+				ctx.EnterBenchmarkInput(&input)
+			}
+
+			fmt.Printf("Done\n")
+
+			return err
+		})
 	}
 
 	ctx.GenerateReport(reportDir)
