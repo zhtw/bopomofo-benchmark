@@ -15,6 +15,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 )
 
 // #cgo CFLAGS: -I/usr/include/chewing
@@ -78,10 +80,18 @@ var BOPOMOFO_TONE = map[rune]uint8{
 	'ˋ': '4',
 }
 
-func newChewingBenchmarkItem() *ChewingBenchmarkContext {
+func newChewingBenchmarkItem(workDir string) *ChewingBenchmarkContext {
 	ctx := new(ChewingBenchmarkContext)
 
-	ctx.ctx = C.chewing_new2(nil, nil, nil, nil)
+	workDir = filepath.Join(workDir, "chewing")
+	err := os.MkdirAll(workDir, 0700)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot create directory %s: %s", workDir, err))
+	}
+
+	workDir = filepath.Join(workDir, "chewing.sqlite3")
+
+	ctx.ctx = C.chewing_new2(nil, C.CString(workDir), nil, nil)
 	if ctx.ctx == nil {
 		panic("chewing_new2 returns NULL")
 	}

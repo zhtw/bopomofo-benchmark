@@ -62,7 +62,7 @@ func main() {
 	flag.Parse()
 
 	if chewing {
-		ctx.addBenchmarkItem(newChewingBenchmarkItem())
+		ctx.addBenchmarkItem(newChewingBenchmarkItem(workDir))
 	}
 
 	for _, input := range flag.Args() {
