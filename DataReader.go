@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func getBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
+func GetBenchmarkInput(filename string) (output []BenchmarkInput, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)

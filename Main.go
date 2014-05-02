@@ -49,7 +49,7 @@ func main() {
 
 	var ctx BenchmarkContext
 	defer func() {
-		ctx.deinit()
+		ctx.Deinit()
 	}()
 
 	flag.BoolVar(&chewing, "chewing", true, "Enable libchewing benchmark")
@@ -62,24 +62,24 @@ func main() {
 	flag.Parse()
 
 	if chewing {
-		ctx.addBenchmarkItem(newChewingBenchmarkItem(workDir))
+		ctx.AddBenchmarkItem(NewChewingBenchmarkItem(workDir))
 	}
 
 	for _, input := range flag.Args() {
 		fmt.Printf("Processing %s ... ", input)
 
-		inputSeq, err := getBenchmarkInput(input)
+		inputSeq, err := GetBenchmarkInput(input)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot open %s\n", input)
 			continue
 		}
 
 		for _, input := range inputSeq {
-			ctx.enterBenchmarkInput(&input)
+			ctx.EnterBenchmarkInput(&input)
 		}
 
 		fmt.Printf("Done\n")
 	}
 
-	ctx.generateReport(reportDir)
+	ctx.GenerateReport(reportDir)
 }

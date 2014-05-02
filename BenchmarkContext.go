@@ -34,37 +34,37 @@ type BenchmarkInput struct {
 }
 
 type BenchmarkItem interface {
-	deinit()
-	getName() string
-	enterBenchmarkInput(input *BenchmarkInput)
-	getAccuracy() []Accuracy
+	Deinit()
+	GetName() string
+	EnterBenchmarkInput(input *BenchmarkInput)
+	GetAccuracy() []Accuracy
 }
 
 type BenchmarkContext struct {
 	benchmarkItem []BenchmarkItem
 }
 
-func (ctx *BenchmarkContext) addBenchmarkItem(item BenchmarkItem) {
+func (ctx *BenchmarkContext) AddBenchmarkItem(item BenchmarkItem) {
 	ctx.benchmarkItem = append(ctx.benchmarkItem, item)
 }
 
-func (ctx *BenchmarkContext) deinit() {
+func (ctx *BenchmarkContext) Deinit() {
 	for _, item := range ctx.benchmarkItem {
-		item.deinit()
+		item.Deinit()
 	}
 
 	ctx.benchmarkItem = ctx.benchmarkItem[:0]
 }
 
-func (ctx *BenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
+func (ctx *BenchmarkContext) EnterBenchmarkInput(input *BenchmarkInput) {
 	for _, item := range ctx.benchmarkItem {
-		item.enterBenchmarkInput(input)
+		item.EnterBenchmarkInput(input)
 	}
 }
 
-func (ctx *BenchmarkContext) generateReport(reportDir string) {
+func (ctx *BenchmarkContext) GenerateReport(reportDir string) {
 	for _, item := range ctx.benchmarkItem {
-		reportName := item.getName() + ".csv"
+		reportName := item.GetName() + ".csv"
 		reportName = filepath.Join(reportDir, reportName)
 
 		fd, err := os.OpenFile(reportName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
@@ -78,7 +78,7 @@ func (ctx *BenchmarkContext) generateReport(reportDir string) {
 
 		totalCorrectCount := 0
 		totalWordCount := 0
-		for _, accuracy := range item.getAccuracy() {
+		for _, accuracy := range item.GetAccuracy() {
 			writer.Write([]string{
 				accuracy.expectString,
 				accuracy.actualString,
@@ -91,7 +91,7 @@ func (ctx *BenchmarkContext) generateReport(reportDir string) {
 		writer.Flush()
 
 		fmt.Printf("- %s: %d / %d (%0.2f)\n",
-			item.getName(),
+			item.GetName(),
 			totalCorrectCount,
 			totalWordCount,
 			float64(totalCorrectCount)/float64(totalWordCount))

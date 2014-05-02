@@ -80,7 +80,7 @@ var BOPOMOFO_TONE = map[rune]uint8{
 	'ˋ': '4',
 }
 
-func newChewingBenchmarkItem(workDir string) *ChewingBenchmarkContext {
+func NewChewingBenchmarkItem(workDir string) *ChewingBenchmarkContext {
 	ctx := new(ChewingBenchmarkContext)
 
 	workDir = filepath.Join(workDir, "chewing")
@@ -99,7 +99,7 @@ func newChewingBenchmarkItem(workDir string) *ChewingBenchmarkContext {
 	return ctx
 }
 
-func (ctx *ChewingBenchmarkContext) deinit() {
+func (ctx *ChewingBenchmarkContext) Deinit() {
 	if ctx.ctx == nil {
 		return
 	}
@@ -108,11 +108,11 @@ func (ctx *ChewingBenchmarkContext) deinit() {
 	ctx.ctx = nil
 }
 
-func (ctx *ChewingBenchmarkContext) getName() string {
+func (ctx *ChewingBenchmarkContext) GetName() string {
 	return "chewing"
 }
 
-func (ctx *ChewingBenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
+func (ctx *ChewingBenchmarkContext) EnterBenchmarkInput(input *BenchmarkInput) {
 	if ctx.ctx == nil {
 		return
 	}
@@ -204,7 +204,7 @@ func (ctx *ChewingBenchmarkContext) selectCandidate(input *BenchmarkInput) {
 	}
 }
 
-func (ctx *ChewingBenchmarkContext) getAccuracy() []Accuracy {
+func (ctx *ChewingBenchmarkContext) GetAccuracy() []Accuracy {
 	return ctx.accuracy
 }
 
