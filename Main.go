@@ -17,7 +17,24 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 )
+
+func prepareDir(dir string) string {
+	var err error
+
+	dir, err = filepath.Abs(dir)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot covert %s to absoluted path", dir))
+	}
+
+	err = os.MkdirAll(dir, 0700)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot create directory %s", dir))
+	}
+
+	return dir
+}
 
 func main() {
 	defer func() {
@@ -27,6 +44,8 @@ func main() {
 	}()
 
 	var chewing bool
+	var workDir string
+	var reportDir string
 
 	var ctx BenchmarkContext
 	defer func() {
@@ -34,6 +53,12 @@ func main() {
 	}()
 
 	flag.BoolVar(&chewing, "chewing", true, "Enable libchewing benchmark")
+	flag.StringVar(&workDir, "workdir", "work", "Set working directory")
+	flag.StringVar(&reportDir, "reportdir", "report", "Set report directory")
+
+	workDir = prepareDir(workDir)
+	reportDir = prepareDir(reportDir)
+
 	flag.Parse()
 
 	if chewing {
