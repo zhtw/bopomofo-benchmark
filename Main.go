@@ -81,5 +81,5 @@ func main() {
 		fmt.Printf("Done\n")
 	}
 
-	ctx.print()
+	ctx.generateReport(reportDir)
 }

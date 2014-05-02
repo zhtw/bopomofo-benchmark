@@ -132,9 +132,13 @@ func (ctx *ChewingBenchmarkContext) enterBopomofo(input *BenchmarkInput) {
 }
 
 func (ctx *ChewingBenchmarkContext) computeAccuracy(input *BenchmarkInput) {
-	var accuracy Accuracy
+	var accuracy Accuracy = Accuracy{
+		expectString: input.inputString,
+		bopomofo:     input.inputBopomofo,
+	}
 
 	result := C.GoString(C.chewing_buffer_String_static(ctx.ctx))
+	accuracy.actualString = result
 
 	if len(result) != len(input.inputString) {
 		panic("len(result) != len(input.inputString)")

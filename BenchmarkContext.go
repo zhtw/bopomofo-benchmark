@@ -14,12 +14,18 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
+	"path/filepath"
 )
 
 type Accuracy struct {
 	wordCount    int
 	correctCount int
+	expectString string
+	actualString string
+	bopomofo     string
 }
 
 type BenchmarkInput struct {
@@ -56,11 +62,38 @@ func (ctx *BenchmarkContext) enterBenchmarkInput(input *BenchmarkInput) {
 	}
 }
 
-func (ctx *BenchmarkContext) print() {
+func (ctx *BenchmarkContext) generateReport(reportDir string) {
 	for _, item := range ctx.benchmarkItem {
-		fmt.Printf("name: %s\n", item.getName())
-		for _, accuracy := range item.getAccuracy() {
-			fmt.Printf("\t%d / %d\n", accuracy.correctCount, accuracy.wordCount)
+		reportName := item.getName() + ".csv"
+		reportName = filepath.Join(reportDir, reportName)
+
+		fd, err := os.OpenFile(reportName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		if err != nil {
+			panic(fmt.Sprintf("Cannot open %s: %s", reportName, err))
 		}
+		defer fd.Close()
+
+		writer := csv.NewWriter(fd)
+		writer.Write([]string{"expect", "actual", "correctCount", "wordCount"})
+
+		totalCorrectCount := 0
+		totalWordCount := 0
+		for _, accuracy := range item.getAccuracy() {
+			writer.Write([]string{
+				accuracy.expectString,
+				accuracy.actualString,
+				fmt.Sprintf("%d", accuracy.correctCount),
+				fmt.Sprintf("%d", accuracy.wordCount)})
+			totalCorrectCount += accuracy.correctCount
+			totalWordCount += accuracy.wordCount
+		}
+
+		writer.Flush()
+
+		fmt.Printf("- %s: %d / %d (%0.2f)\n",
+			item.getName(),
+			totalCorrectCount,
+			totalWordCount,
+			float64(totalCorrectCount)/float64(totalWordCount))
 	}
 }
