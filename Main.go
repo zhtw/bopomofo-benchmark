@@ -25,12 +25,12 @@ func prepareDir(dir string) string {
 
 	dir, err = filepath.Abs(dir)
 	if err != nil {
-		panic(fmt.Sprintf("Cannot covert %s to absoluted path", dir))
+		panic(fmt.Sprintf("Cannot covert %s to absoluted path: %s", dir, err))
 	}
 
 	err = os.MkdirAll(dir, 0700)
 	if err != nil {
-		panic(fmt.Sprintf("Cannot create directory %s", dir))
+		panic(fmt.Sprintf("Cannot create directory %s: %s", dir, err))
 	}
 
 	return dir
