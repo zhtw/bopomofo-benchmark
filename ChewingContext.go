@@ -19,8 +19,7 @@ import (
 	"path/filepath"
 )
 
-// #cgo CFLAGS: -I/usr/include/chewing
-// #cgo LDFLAGS: -lchewing
+// #cgo pkg-config: chewing
 // #include <chewing.h>
 import "C"
 
